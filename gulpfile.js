@@ -15,7 +15,7 @@ var browserSync = require('browser-sync');
 /**
  * Using different folders/file names? Change these constants:
  */
-var PHASER_PATH = './node_modules/phaser/build/';
+var PHASER_PATH = './node_modules/phaser/dist/';
 var BUILD_PATH = './build';
 var SCRIPTS_PATH = BUILD_PATH + '/scripts';
 var SOURCE_PATH = './src';
@@ -51,12 +51,14 @@ function logBuildMode() {
  * optional task dependencies :(
  * Note: keepFiles is set to true by gulp.watch (see serve()) and reseted here to avoid conflicts.
  */
-function cleanBuild() {
+function cleanBuild(done) {
     if (!keepFiles) {
         del(['build/**/*.*']);
     } else {
         keepFiles = false;
     }
+
+    done();
 }
 
 /**
@@ -77,7 +79,7 @@ function copyPhaser() {
     var srcList = ['phaser.min.js'];
     
     if (!isProduction()) {
-        srcList.push('phaser.map', 'phaser.js');
+        srcList.push('phaser.js');
     }
     
     srcList = srcList.map(function(file) {
@@ -102,6 +104,10 @@ function build() {
 
     var sourcemapPath = SCRIPTS_PATH + '/' + OUTPUT_FILE + '.map';
     logBuildMode();
+
+    console.log(OUTPUT_FILE);
+    console.log(SCRIPTS_PATH);
+    console.log(sourcemapPath);
 
     return browserify({
             paths: [path.join(__dirname, 'src')],
@@ -138,16 +144,16 @@ function serve() {
         server: {
             baseDir: BUILD_PATH
         },
-        open: false // Change it to true if you wish to allow Browsersync to open a browser window.
+        open: true // Change it to true if you wish to allow Browsersync to open a browser window.
     };
     
     browserSync(options);
     
     // Watches for changes in files inside the './src' folder.
-    gulp.watch(SOURCE_PATH + '/**/*.js', ['watch-js']);
+    gulp.watch(SOURCE_PATH + '/**/*.js', gulp.series('watch-js'));
     
     // Watches for changes in files inside the './static' folder. Also sets 'keepFiles' to true (see cleanBuild()).
-    gulp.watch(STATIC_PATH + '/**/*', ['watch-static']).on('change', function() {
+    gulp.watch(STATIC_PATH + '/**/*', gulp.series('watch-static')).on('change', function() {
         keepFiles = true;
     });
 
@@ -155,13 +161,13 @@ function serve() {
 
 
 gulp.task('cleanBuild', cleanBuild);
-gulp.task('copyStatic', ['cleanBuild'], copyStatic);
-gulp.task('copyPhaser', ['copyStatic'], copyPhaser);
-gulp.task('build', ['copyPhaser'], build);
+gulp.task('copyStatic', gulp.series(['cleanBuild'], copyStatic));
+gulp.task('copyPhaser', gulp.series(['copyStatic'], copyPhaser));
+gulp.task('build', gulp.series(['copyPhaser'], build));
 gulp.task('fastBuild', build);
-gulp.task('serve', ['build'], serve);
-gulp.task('watch-js', ['fastBuild'], browserSync.reload); // Rebuilds and reloads the project when executed.
-gulp.task('watch-static', ['copyPhaser'], browserSync.reload);
+gulp.task('serve', gulp.series(['build'], serve));
+gulp.task('watch-js', gulp.series(['fastBuild'], browserSync.reload)); // Rebuilds and reloads the project when executed.
+gulp.task('watch-static', gulp.series(['copyPhaser'], browserSync.reload));
 
 /**
  * The tasks are executed in the following order:
@@ -170,4 +176,8 @@ gulp.task('watch-static', ['copyPhaser'], browserSync.reload);
  * Read more about task dependencies in Gulp: 
  * https://medium.com/@dave_lunny/task-dependencies-in-gulp-b885c1ab48f0
  */
-gulp.task('default', ['serve']);
+
+gulp.task('default', gulp.series(['serve'], function(done) {
+    console.log("Hey");
+    done();
+}));
