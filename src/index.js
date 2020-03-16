@@ -1,3 +1,6 @@
+import MainMenuState from './mainMenuState.js';
+import GuiRenderer from './guiRenderer.js';
+
 export default class Game {
   constructor() {
     this.container = document.getElementById('content');
@@ -12,8 +15,13 @@ export default class Game {
   }
 
   init() {
+
     window.addEventListener("resize", x => this.onResize());
     this.onResize();
+
+    this.guiRenderer = new GuiRenderer(this.ctx);
+
+    this.state = new MainMenuState(this);
 
     requestAnimationFrame((time) => this.update(time));
   }
@@ -24,12 +32,17 @@ export default class Game {
 
     this.canvas.width = this.width;
     this.canvas.height = this.height;
+
+    this.ctx.fillStyle = '#fff';
+    this.ctx.strokeStyle = '#fff';
   }
 
   update(time) {
-    const dt = time - this.prevUpdateTime;
+    const deltaTime = time - this.prevUpdateTime;
     this.prevUpdateTime = time;
-    console.log('update!');
+    
+    this.state.update(deltaTime);
+    this.state.draw();
 
     requestAnimationFrame((time) => this.update(time));
   }
