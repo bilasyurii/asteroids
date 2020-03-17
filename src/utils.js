@@ -10,4 +10,11 @@ export default class Utils {
   static randomInt(max) {
     return Math.floor(Math.random() * max);
   }
+
+  static randomPointOnLine(lineStart, lineEnd) {
+    const direction = lineEnd.substract(lineStart);
+    const length = direction.length;
+    const coefficient = Math.random() * length;
+    return direction.normalized.multiply(coefficient).add(lineStart);
+  }
 }

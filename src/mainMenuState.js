@@ -16,9 +16,10 @@ export default class MainMenuState extends GameState {
       this.game.state = null;
     }
 
-    for (const entity of this.entities) {
-      entity.update(deltaTime);
-    }
+    this.updateEntities(deltaTime);
+    this.moveEntitiesThroughEdges();
+
+    //TODO check collision there and notify entities about it
   }
 
   draw() {
@@ -35,7 +36,7 @@ export default class MainMenuState extends GameState {
     this.entities = [];
 
     for (let i = 0; i < StartAsteroidCount; ++i) {
-      const spawnPosition = new Vec2(500, 200);
+      const spawnPosition = this.game.getAsteroidSpawnPosition();
 
       this.entities.push(new Asteroid(spawnPosition));
     }

@@ -1,5 +1,7 @@
 import MainMenuState from './mainMenuState.js';
 import GuiRenderer from './guiRenderer.js';
+import Utils from './utils.js';
+import Vec2 from './vec2.js';
 
 export default class Game {
   constructor() {
@@ -37,6 +39,13 @@ export default class Game {
     this.canvas.width = this.width;
     this.canvas.height = this.height;
 
+    this.corners = [
+      new Vec2(0, 0),
+      new Vec2(this.width, 0),
+      new Vec2(this.width, this.height),
+      new Vec2(0, this.height)
+    ];
+
     this.ctx.fillStyle = '#fff';
     this.ctx.strokeStyle = '#fff';
   }
@@ -49,6 +58,20 @@ export default class Game {
     this.state.draw();
 
     requestAnimationFrame((time) => this.update(time));
+  }
+
+  getEdge(edgeIndex) {
+    return {
+      firstCorner: this.corners[edgeIndex],
+      secondCorner: this.corners[(edgeIndex + 1) % 4]
+    };
+  }
+
+  getAsteroidSpawnPosition() {
+    const edgeIndex = Utils.randomInt(4);
+    const edge = this.getEdge(edgeIndex);
+
+    return Utils.randomPointOnLine(edge.firstCorner, edge.secondCorner);
   }
 }
 
