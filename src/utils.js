@@ -1,6 +1,6 @@
 export default class Utils {
   static clamp(value, min, max) {
-    return Math.min(math.max(this, min), max);
+    return Math.min(Math.max(this, min), max);
   }
 
   static isInRange(value, min, max) {

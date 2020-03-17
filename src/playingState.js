@@ -1,8 +1,9 @@
 import GameState from './gameState.js';
 import TextLabel from './textLabel.js';
+import Vec2 from './vec2.js';
 import { Player } from './player.js';
 import { ScreenVec2, OriginX } from './screenVec2.js';
-import { Asteroid, asteroidStartCount } from './asteroid.js';
+import { Asteroid, asteroidStartCount, AsteroidSize, asteroidSplitCount } from './asteroid.js';
 
 export default class PlayingState extends GameState {
   constructor(game) {
@@ -27,6 +28,8 @@ export default class PlayingState extends GameState {
   update(deltaTime) {
     this.updateEntities(deltaTime);
     this.moveEntitiesThroughEdges();
+    this.handleCollisions();
+    this.removeDeadEntities();
   }
 
   draw() {
@@ -47,14 +50,34 @@ export default class PlayingState extends GameState {
     for (let i = 0; i < asteroidStartCount; ++i) {
       const spawnPosition = this.game.getAsteroidSpawnPosition();
 
-      this.entities.push(new Asteroid(spawnPosition));
+      this.entities.push(new Asteroid(spawnPosition, AsteroidSize.BIG, 
+                                      (asteroid) => this.splitAsteroid(asteroid)));
+    }
+  }
+
+  splitAsteroid(asteroid) {
+    if(asteroid.size === AsteroidSize.SMALL) {
+      return;
+    }
+
+    const newSize = (asteroid.size === AsteroidSize.BIG ? AsteroidSize.MEDIUM : AsteroidSize.SMALL);
+
+    for (let i = 0; i < asteroidSplitCount; ++i) {
+      const newVelocity = Vec2.random(asteroid.velocity.length);
+
+      this.entities.push(new Asteroid(asteroid.position, newSize, 
+                                      (asteroid) => this.splitAsteroid(asteroid),
+                                      newVelocity));
     }
   }
 
   initInputHandling() {
-    /*this.game.input.action.subscribe(true, () => {
-      this.game.setState(new PlayingState());
-    });*/
+    this.subscriptions.push(this.game.input.action.subscribe(true, () => {
+      const bullet = this.player.shoot();
+      if (bullet != undefined) {
+        this.entities.push(bullet);
+      }
+    }));
   }
 
   initGUI() {

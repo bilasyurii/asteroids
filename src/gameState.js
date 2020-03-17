@@ -21,6 +21,25 @@ export default class GameState {
     return (coord + edgeSize) % edgeSize;
   }
 
+  removeDeadEntities() {
+    this.entities = this.entities.filter(entity => entity.alive);
+  }
+
+  handleCollisions() {
+    for (const entity of this.entities) {
+      if (entity.alive) {
+        for (const other of this.entities) {
+          if (other != entity && other.alive) {
+            if (entity.collides(other)) {
+              entity.onCollision();
+              other.onCollision();
+            }
+          }
+        }
+      }
+    }
+  }
+
   moveEntitiesThroughEdges() {
     for (const entity of this.entities) {
       entity.position.x = this.moveCoordThroughEdge(entity.position.x, this.game.width);

@@ -1,9 +1,10 @@
 import Collider from "./collider.js";
 import PointCollider from "./pointCollider.js";
+import CircleCollider from "./circleCollider.js";
 
 export default class RectCollider extends Collider {
-  constructor(position, size, rotation) {
-    super(position);
+  constructor(position, tag, size, rotation) {
+    super(position, tag);
 
     this.size = size;
 
@@ -19,6 +20,10 @@ export default class RectCollider extends Collider {
   }
 
   collides(other) {
+    if (super.collides(other) === false) {
+      return false;
+    }
+
     if (other instanceof CircleCollider) {
       return Collider.circle2rect(other, this);
     } else if (other instanceof PointCollider) {

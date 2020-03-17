@@ -12,9 +12,10 @@ export const AsteroidSize = {
 export const asteroidStartCount = 4;
 export const asteroidStartVelocity = 0.1;
 export const asteroidMaxVelocity = 0.1;
+export const asteroidSplitCount = 2;
 
 export class Asteroid extends Entity {
-  constructor(position, size, velocity) {
+  constructor(position, size, splitAsteroidCallback, velocity) {
     if (size == undefined) {
       size = AsteroidSize.BIG;
     }
@@ -23,14 +24,16 @@ export class Asteroid extends Entity {
       velocity = Vec2.random(asteroidStartVelocity);
     }
       
-    const collider = new CircleCollider(position, size);
+    const collider = new CircleCollider(position, 'asteroid', size);
 
     super(position, collider, new AsteroidGraphic(size), asteroidMaxVelocity, velocity);
 
     this.size = size;
+    this.splitAsteroidCallback = splitAsteroidCallback;
   }
 
   onCollision() {
-    
+    this.die();
+    this.splitAsteroidCallback(this);
   }
 }

@@ -3,6 +3,7 @@ import GuiRenderer from './guiRenderer.js';
 import Utils from './utils.js';
 import Vec2 from './vec2.js';
 import { Input } from './input.js';
+import Collider from './collider.js';
 
 export default class Game {
   constructor() {
@@ -21,6 +22,7 @@ export default class Game {
     window.addEventListener("resize", x => this.onResize());
     this.onResize();
 
+    this.registerTagsCollisionRules();
     this.guiRenderer = new GuiRenderer(this.ctx);
     this.input = new Input();
 
@@ -35,6 +37,15 @@ export default class Game {
     }
     this.state = newState;
     this.state.init();
+  }
+
+  registerTagsCollisionRules() {
+    Collider.registerTagsCollisionRule('player', 'player', false);
+    Collider.registerTagsCollisionRule('asteroid', 'asteroid', false);
+    Collider.registerTagsCollisionRule('enemy', 'enemy', false);
+    Collider.registerTagsCollisionRule('player', 'asteroid', true);
+    Collider.registerTagsCollisionRule('enemy', 'player', true);
+    Collider.registerTagsCollisionRule('enemy', 'asteroid', false);
   }
 
   onResize() {

@@ -12,6 +12,8 @@ export default class Entity {
     } else {
       this.velocity = velocity;
     }
+    
+    this.alive = true;
   }
 
   addForce(forceVelocity) {
@@ -42,4 +44,17 @@ export default class Entity {
       ctx.restore();
     }
   }
+
+  collides(other) {
+    if (this.collider == undefined || other.collider == undefined) {
+      return false;
+    }
+    return this.collider.collides(other.collider);
+  }
+
+  die() {
+    this.alive = false;
+  }
+
+  onCollision() {}
 }
