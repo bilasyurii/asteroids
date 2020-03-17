@@ -34,6 +34,36 @@ export default class Vec2 {
     return this.x === other.x && this.y === other.y;
   }
 
+  distance(other) {
+    return this.substract(other).length;
+  }
+
+  rotate(origin, angle) {
+    const sin = Math.sin(angle);
+    const cos = Math.cos(angle);
+
+    const newPosition = this.substract(origin);
+
+    newPosition.x =  newPosition.x * cos - newPosition.y * sin + origin.x;
+    newPosition.y = newPosition.x * sin + newPosition.y * cos + origin.y;
+
+    return newPosition;
+  }
+
+  static random(length) {
+    const angle = Math.random() * 2 * Math.PI;
+
+    return Vec2.fromAngle(angle, length);
+  }
+
+  static fromAngle(angle, length) {
+    if (length == undefined) {
+      length = 1;
+    }
+
+    return new Vec2(Math.cos(angle) * length, Math.sin(angle) * length);
+  }
+
   static get zero() {
     return new Vec2(0, 0);
   }

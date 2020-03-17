@@ -1,16 +1,16 @@
 import Vec2 from './vec2.js';
 
 export default class Entity {
-  constructor(position, velocity, collider) {
+  constructor(position, collider, graphic, velocity) {
     this.position = position;
+    this.collider = collider;
+    this.graphic = graphic;
 
     if (velocity == undefined) {
       this.velocity = Vec2.zero;
     } else {
       this.velocity = velocity;
     }
-
-    this.collider = collider;
   }
 
   addForce(forceVelocity) {
@@ -19,7 +19,22 @@ export default class Entity {
 
   update(deltaTime) {
     if (!this.velocity.equals(Vec2.zero)) {
-      this.position.add(this.velocity.multiply(deltaTime));
+      this.position = this.position.add(this.velocity.multiply(deltaTime));
+    }
+
+    if (this.collider != undefined) {
+      this.collider.position = this.position;
+    }
+  }
+  
+  draw(ctx) {
+    if (this.graphic != undefined) {
+      ctx.save();
+      ctx.translate(this.position.x, this.position.y);
+
+      this.graphic.draw(ctx);
+
+      ctx.restore();
     }
   }
 }

@@ -105,10 +105,6 @@ function build() {
     var sourcemapPath = SCRIPTS_PATH + '/' + OUTPUT_FILE + '.map';
     logBuildMode();
 
-    console.log(OUTPUT_FILE);
-    console.log(SCRIPTS_PATH);
-    console.log(sourcemapPath);
-
     return browserify({
             paths: [path.join(__dirname, 'src')],
             entries: ENTRY_FILE,
@@ -178,6 +174,5 @@ gulp.task('watch-static', gulp.series(['copyPhaser'], browserSync.reload));
  */
 
 gulp.task('default', gulp.series(['serve'], function(done) {
-    console.log("Hey");
     done();
 }));

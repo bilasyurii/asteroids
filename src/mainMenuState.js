@@ -3,15 +3,45 @@ import { ScreenVec2, OriginX, OriginY } from './screenVec2.js';
 import TextLabel from './textLabel.js';
 import Panel from './panel.js';
 import { ScreenCoord, ScreenCoordType } from './screenCoord.js';
+import { Asteroid, StartAsteroidCount } from './asteroid.js';
+import Vec2 from './vec2.js';
 
 export default class MainMenuState extends GameState {
   constructor(game) {
     super(game);
-
-    this.init();
   }
 
-  init() {
+  update(deltaTime) {
+    if (false) {
+      this.game.state = null;
+    }
+
+    for (const entity of this.entities) {
+      entity.update(deltaTime);
+    }
+  }
+
+  draw() {
+    this.game.ctx.clearRect(0, 0, this.game.width, this.game.height);
+
+    for (const entity of this.entities) {
+      entity.draw(this.game.ctx);
+    }
+
+    this.game.guiRenderer.draw();
+  }
+
+  initEntities() {
+    this.entities = [];
+
+    for (let i = 0; i < StartAsteroidCount; ++i) {
+      const spawnPosition = new Vec2(500, 200);
+
+      this.entities.push(new Asteroid(spawnPosition));
+    }
+  }
+
+  initGUI() {
     const latestScore = new TextLabel('00', 30, 
         new ScreenVec2(0.2, 0.1, OriginX.RIGHT));
 
@@ -23,6 +53,9 @@ export default class MainMenuState extends GameState {
 
     const copyright = new TextLabel('2020 YURA INC', 10,
         new ScreenVec2(0.5, 0.9));
+
+    const playText = new TextLabel('1   COIN   1   PLAY', 30,
+        new ScreenVec2(0.5, 0.8));
 
     const highScoresPanel = new Panel(new ScreenVec2(0.5, 0.25, OriginX.CENTER, OriginY.TOP),
                                        new ScreenVec2(0.3, 0.5));
@@ -44,17 +77,7 @@ export default class MainMenuState extends GameState {
     this.game.guiRenderer.addElement('highestScore', highestScore);
     this.game.guiRenderer.addElement('worldBest', worldBest);
     this.game.guiRenderer.addElement('copyright', copyright);
+    this.game.guiRenderer.addElement('playText', playText);
     this.game.guiRenderer.addElement('highScoresPanel', highScoresPanel);
-}
-
-  update(deltaTime) {
-    if (false) {
-      this.game.state = null;
-    }
-  }
-
-  draw() {
-    this.game.ctx.clearRect(0, 0, this.game.width, this.game.height);
-    this.game.guiRenderer.draw();
   }
 }

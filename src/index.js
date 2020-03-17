@@ -15,15 +15,19 @@ export default class Game {
   }
 
   init() {
-
     window.addEventListener("resize", x => this.onResize());
     this.onResize();
 
     this.guiRenderer = new GuiRenderer(this.ctx);
 
-    this.state = new MainMenuState(this);
+    this.setState(new MainMenuState(this))
 
     requestAnimationFrame((time) => this.update(time));
+  }
+
+  setState(newState) {
+    this.state = newState;
+    this.state.init();
   }
 
   onResize() {
