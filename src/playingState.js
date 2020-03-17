@@ -1,11 +1,27 @@
 import GameState from './gameState.js';
 import TextLabel from './textLabel.js';
+import { Player } from './player.js';
 import { ScreenVec2, OriginX } from './screenVec2.js';
-import { Asteroid, StartAsteroidCount } from './asteroid.js';
+import { Asteroid, asteroidStartCount } from './asteroid.js';
 
 export default class PlayingState extends GameState {
   constructor(game) {
     super(game);
+    
+    this.entities = [];
+    this.player = undefined;
+  }
+
+  handleInput(deltaTime) {
+    if (this.game.input.up.pressed) {
+      this.player.move(deltaTime);
+    }
+    if (this.game.input.left.pressed) {
+      this.player.rotateLeft(deltaTime);
+    }
+    if (this.game.input.right.pressed) {
+      this.player.rotateRight(deltaTime);
+    }
   }
 
   update(deltaTime) {
@@ -24,9 +40,11 @@ export default class PlayingState extends GameState {
   }
 
   initEntities() {
-    this.entities = [];
+    // spawn player at the center
+    this.player = new Player(this.game.corners[2].multiply(0.5));
+    this.entities.push(this.player);
 
-    for (let i = 0; i < StartAsteroidCount; ++i) {
+    for (let i = 0; i < asteroidStartCount; ++i) {
       const spawnPosition = this.game.getAsteroidSpawnPosition();
 
       this.entities.push(new Asteroid(spawnPosition));

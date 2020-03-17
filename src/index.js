@@ -59,7 +59,7 @@ export default class Game {
     const deltaTime = time - this.prevUpdateTime;
     this.prevUpdateTime = time;
     
-    this.state.handleInput();
+    this.state.handleInput(deltaTime);
     this.state.update(deltaTime);
     this.state.draw();
 

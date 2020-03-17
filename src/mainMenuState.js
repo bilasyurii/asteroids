@@ -3,7 +3,7 @@ import { ScreenVec2, OriginX, OriginY } from './screenVec2.js';
 import TextLabel from './textLabel.js';
 import Panel from './panel.js';
 import { ScreenCoord, ScreenCoordType } from './screenCoord.js';
-import { Asteroid, StartAsteroidCount } from './asteroid.js';
+import { Asteroid, asteroidStartCount } from './asteroid.js';
 import PlayingState from './playingState.js';
 
 export default class MainMenuState extends GameState {
@@ -29,7 +29,7 @@ export default class MainMenuState extends GameState {
   initEntities() {
     this.entities = [];
 
-    for (let i = 0; i < StartAsteroidCount; ++i) {
+    for (let i = 0; i < asteroidStartCount; ++i) {
       const spawnPosition = this.game.getAsteroidSpawnPosition();
 
       this.entities.push(new Asteroid(spawnPosition));

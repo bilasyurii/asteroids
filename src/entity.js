@@ -1,10 +1,11 @@
 import Vec2 from './vec2.js';
 
 export default class Entity {
-  constructor(position, collider, graphic, velocity) {
+  constructor(position, collider, graphic, maxVelocity, velocity) {
     this.position = position;
     this.collider = collider;
     this.graphic = graphic;
+    this.maxVelocity = maxVelocity;
 
     if (velocity == undefined) {
       this.velocity = Vec2.zero;
@@ -15,6 +16,10 @@ export default class Entity {
 
   addForce(forceVelocity) {
     this.velocity = this.velocity.add(forceVelocity);
+
+    if (this.velocity.length > this.maxVelocity) {
+      this.velocity = this.velocity.normalized.multiply(this.maxVelocity);
+    }
   }
 
   update(deltaTime) {

@@ -28,7 +28,7 @@ export default class GameState {
     }
   }
 
-  handleInput() {}
+  handleInput(deltaTime) {}
   
   onDestroy() {
     for (const subscription of this.subscriptions) {

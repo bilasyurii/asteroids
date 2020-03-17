@@ -14,6 +14,10 @@ export default class RectCollider extends Collider {
     }
   }
 
+  rotate(angle) {
+    this.rotation += angle;
+  }
+
   collides(other) {
     if (other instanceof CircleCollider) {
       return Collider.circle2rect(other, this);
