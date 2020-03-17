@@ -4,7 +4,7 @@ import TextLabel from './textLabel.js';
 import Panel from './panel.js';
 import { ScreenCoord, ScreenCoordType } from './screenCoord.js';
 import { Asteroid, StartAsteroidCount } from './asteroid.js';
-import Vec2 from './vec2.js';
+import PlayingState from './playingState.js';
 
 export default class MainMenuState extends GameState {
   constructor(game) {
@@ -12,14 +12,8 @@ export default class MainMenuState extends GameState {
   }
 
   update(deltaTime) {
-    if (false) {
-      this.game.state = null;
-    }
-
     this.updateEntities(deltaTime);
     this.moveEntitiesThroughEdges();
-
-    //TODO check collision there and notify entities about it
   }
 
   draw() {
@@ -42,7 +36,15 @@ export default class MainMenuState extends GameState {
     }
   }
 
+  initInputHandling() {
+    this.subscriptions.push(this.game.input.action.subscribe(true, () => {
+      this.game.setState(new PlayingState(this.game));
+    }));
+  }
+
   initGUI() {
+    super.initGUI();
+    
     const latestScore = new TextLabel('00', 30, 
         new ScreenVec2(0.2, 0.1, OriginX.RIGHT));
 

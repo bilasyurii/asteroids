@@ -2,6 +2,7 @@ import MainMenuState from './mainMenuState.js';
 import GuiRenderer from './guiRenderer.js';
 import Utils from './utils.js';
 import Vec2 from './vec2.js';
+import { Input } from './input.js';
 
 export default class Game {
   constructor() {
@@ -21,6 +22,7 @@ export default class Game {
     this.onResize();
 
     this.guiRenderer = new GuiRenderer(this.ctx);
+    this.input = new Input();
 
     this.setState(new MainMenuState(this))
 
@@ -28,6 +30,9 @@ export default class Game {
   }
 
   setState(newState) {
+    if (this.state != undefined) {
+      this.state.onDestroy();
+    }
     this.state = newState;
     this.state.init();
   }
@@ -54,6 +59,7 @@ export default class Game {
     const deltaTime = time - this.prevUpdateTime;
     this.prevUpdateTime = time;
     
+    this.state.handleInput();
     this.state.update(deltaTime);
     this.state.draw();
 

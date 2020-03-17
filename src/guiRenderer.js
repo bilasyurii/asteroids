@@ -12,6 +12,10 @@ export default class GUIRenderer {
     return this.elements[key];
   }
 
+  removeAll() {
+    this.elements = {};
+  }
+
   draw() {
     const width = this.ctx.canvas.clientWidth;
     const height = this.ctx.canvas.clientHeight;

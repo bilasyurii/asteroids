@@ -1,12 +1,13 @@
-import Utils from "./utils.js";
-
 export default class GameState {
   constructor(game) {
     this.game = game;
+
+    this.subscriptions = [];
   }
 
   init() {
     this.initGUI();
+    this.initInputHandling();
     this.initEntities();
   }
 
@@ -25,5 +26,17 @@ export default class GameState {
       entity.position.x = this.moveCoordThroughEdge(entity.position.x, this.game.width);
       entity.position.y = this.moveCoordThroughEdge(entity.position.y, this.game.height);
     }
+  }
+
+  handleInput() {}
+  
+  onDestroy() {
+    for (const subscription of this.subscriptions) {
+      subscription.unsubscribe();
+    }
+  }
+
+  initGUI() {
+    this.game.guiRenderer.removeAll();
   }
 }
