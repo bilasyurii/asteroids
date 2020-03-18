@@ -25,9 +25,6 @@ export default class Panel extends GUIElement {
     ctx.save();
     super.translate(ctx, width, height);
 
-    //TODO remove cause its only for debug
-    //ctx.strokeRect(0, 0, size.x, size.y);
-
     for (const child of this.children) {
       child.draw(ctx, size.x, size.y);
     }

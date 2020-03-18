@@ -3,19 +3,88 @@ import { ScreenVec2, OriginX, OriginY } from './screenVec2.js';
 import TextLabel from './textLabel.js';
 import Panel from './panel.js';
 import { ScreenCoord, ScreenCoordType } from './screenCoord.js';
-import PlayingState from './playingState.js';
+import MainMenuState from './mainMenuState.js';
+
+const maxInitials = 3;
 
 export default class EndScreenState extends GameState {
   constructor(game, score) {
     super(game);
     this.score = score;
     this.isHighscore = undefined;
+    this.initials = undefined;
+    this.currentInitial = 0;
+  }
+
+  init() {
+    super.init();
+
+    this.initials = [];
+    for (let i = 0; i < maxInitials; ++i) {
+      this.initials.push(undefined);
+    }
+
+    this.initInitial();
+  }
+
+  initInitial() {
+    this.initials[this.currentInitial] = 'A';
+
+    this.updateInitialUI();
   }
 
   initInputHandling() {
-    this.subscriptions.push(this.game.input.action.subscribe(true, () => {
-      this.game.setState(new PlayingState(this.game));
+    this.subscriptions.push(this.game.input.up.subscribe(true, () => {
+      this.letterUp();
     }));
+
+    this.subscriptions.push(this.game.input.down.subscribe(true, () => {
+      this.letterDown();
+    }));
+
+    this.subscriptions.push(this.game.input.action.subscribe(true, () => {
+      this.confirm();
+    }));
+  }
+
+  letterUp() {
+    const currentCode = this.initials[this.currentInitial].charCodeAt(0);
+    let newCode = currentCode + 1;
+    if (newCode > 'Z'.charCodeAt(0)) {
+      newCode = 'A'.charCodeAt(0);
+    }
+    this.initials[this.currentInitial] = String.fromCharCode(newCode);
+
+    this.updateInitialUI();
+  }
+
+  letterDown() {
+    const currentCode = this.initials[this.currentInitial].charCodeAt(0);
+    let newCode = currentCode - 1;
+    if (newCode < 'A'.charCodeAt(0)) {
+      newCode = 'Z'.charCodeAt(0);
+    }
+    this.initials[this.currentInitial] = String.fromCharCode(newCode);
+
+    this.updateInitialUI();
+  }
+
+  confirm() {
+    ++this.currentInitial;
+
+    if (this.currentInitial < maxInitials) {
+      this.initInitial();
+    } else {
+      this.game.scores.registerScore(this.score, this.initials.join(''));
+      this.game.setState(new MainMenuState(this.game));
+    }
+  }
+
+  updateInitialUI() {
+    this.game.guiRenderer
+             .getElement('initialsPanel')
+             .children[this.currentInitial]
+             .text = this.initials[this.currentInitial];
   }
 
   initGUI() {
@@ -32,17 +101,30 @@ export default class EndScreenState extends GameState {
 
     const copyright = new TextLabel('2020 YURA INC', 10,
         new ScreenVec2(0.5, 0.9));
+
+    const initialsPanel = new Panel(new ScreenVec2(0.5, 0.8, OriginX.CENTER, OriginY.BOTTOM),
+        new ScreenVec2(new ScreenCoord(200, ScreenCoordType.ABSOLUTE), 0.3));
+
+    const initialsDistance = 1 / (maxInitials - 1);
+        
+    for (let i = 0; i < maxInitials; ++i) {
+      const concreteInitialElement = new TextLabel('_', 30, 
+          new ScreenVec2(initialsDistance * i, 1, OriginX.CENTER, OriginY.BOTTOM));
+        
+      initialsPanel.addChild(concreteInitialElement);
+    }
         
     this.game.guiRenderer.addElement('currentScore', currentScore);
     this.game.guiRenderer.addElement('latestScore', latestScore);
     this.game.guiRenderer.addElement('highestScore', highestScore);
     this.game.guiRenderer.addElement('copyright', copyright);
+    this.game.guiRenderer.addElement('initialsPanel', initialsPanel);
 
-    this.isHighscore = this.game.scores.registerScore(this.currentScore);
+    this.isHighscore = this.game.scores.isHighscore(this.currentScore);
 
     if (this.isHighscore) {
       const infoPanel = new Panel(new ScreenVec2(0.5, 0.25, OriginX.CENTER, OriginY.TOP),
-      new ScreenVec2(0.8, 0.3));
+          new ScreenVec2(0.8, 0.3));
   
       const congratulations = new TextLabel('YOUR SCORE IS ONE OF THE TEN BEST', 20,
           new ScreenVec2(0.5, new ScreenCoord(0, ScreenCoordType.ABSOLUTE), OriginX.CENTER, OriginY.TOP));

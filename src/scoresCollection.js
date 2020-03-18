@@ -6,6 +6,12 @@ export default class ScoresCollection {
     this.latestScore = 0;
   }
 
+  isHighscore(score) {
+    const scoresCount = this.scores.length;
+
+    return scoresCount < topScoresCount || score > this.scores[scoresCount - 1];
+  }
+
   registerScore(score, initials) {
     this.latestScore = score;
 
@@ -21,18 +27,14 @@ export default class ScoresCollection {
       });
 
      this.scores.sort((a, b) => b.score - a.score);
-
-     return true;
     }
-    
-    return false;
   }
 
   get highestScore() {
     if (this.scores.length === 0) {
-      return 0;
+      return 0
     }
     
-    return this.scores[0];
+    return this.scores[0].score;
   }
 }
