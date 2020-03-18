@@ -58,4 +58,19 @@ export default class GameState {
   initGUI() {
     this.game.guiRenderer.removeAll();
   }
+
+  clearCanvas() {
+    this.game.ctx.clearRect(0, 0, this.game.width, this.game.height);
+  }
+
+  drawEntities() {
+    for (const entity of this.entities) {
+      entity.draw(this.game.ctx);
+    }
+  }
+  
+  draw() {
+    this.clearCanvas();
+    this.drawEntities();
+  }
 }

@@ -16,7 +16,7 @@ export default class RectCollider extends Collider {
   }
 
   rotate(angle) {
-    this.rotation += angle;
+    this.rotation = (this.rotation + angle + 2 * Math.PI) % (2 * Math.PI);
   }
 
   collides(other) {

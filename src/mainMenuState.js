@@ -16,16 +16,6 @@ export default class MainMenuState extends GameState {
     this.moveEntitiesThroughEdges();
   }
 
-  draw() {
-    this.game.ctx.clearRect(0, 0, this.game.width, this.game.height);
-
-    for (const entity of this.entities) {
-      entity.draw(this.game.ctx);
-    }
-
-    this.game.guiRenderer.draw();
-  }
-
   initEntities() {
     this.entities = [];
 

@@ -42,11 +42,11 @@ export default class Vec2 {
     const sin = Math.sin(angle);
     const cos = Math.cos(angle);
 
-    const newPosition = this.substract(origin);
-
-    newPosition.x =  newPosition.x * cos - newPosition.y * sin + origin.x;
-    newPosition.y = newPosition.x * sin + newPosition.y * cos + origin.y;
-
+    let newPosition = this.substract(origin);
+    
+    newPosition = new Vec2(newPosition.x * cos - newPosition.y * sin + origin.x,
+                           newPosition.x * sin + newPosition.y * cos + origin.y);
+    
     return newPosition;
   }
 

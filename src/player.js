@@ -10,25 +10,30 @@ export const playerRotationSpeed = 0.005;
 export const playerMaxVelocity = 0.2;
 export const playerDeceleration = 0.00005;
 export const playerReloadTime = 200;
+export const playerInvincibilityTime = 2000;
+export const playerRespawnTime = 2000;
 
 export class Player extends Entity {
-  constructor(position) {
+  constructor(position, onHitCallback) {
     const collider = new RectCollider(position, 'player', new Vec2(playerSize, playerSize));
 
     super(position, collider, new PlayerGraphic(), playerMaxVelocity);
 
     this.lifeCount = 3;
     this.timeToReloaded = 0;
+    this.onHitCallback = onHitCallback;
   }
 
   draw(ctx) {
-    ctx.save();
-    ctx.translate(this.position.x, this.position.y);
-    ctx.rotate(this.collider.rotation);
+    if (this.graphic != undefined) {
+      ctx.save();
+      ctx.translate(this.position.x, this.position.y);
+      ctx.rotate(this.collider.rotation);
 
-    this.graphic.draw(ctx);
+      this.graphic.draw(ctx);
 
-    ctx.restore();
+      ctx.restore();
+    }
   }
 
   decelerate(amount) {
@@ -78,8 +83,11 @@ export class Player extends Entity {
 
   onCollision() {
     --this.lifeCount;
+
     if (this.lifeCount <= 0) {
       this.die();
     }
+
+    this.onHitCallback();
   }
 }

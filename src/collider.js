@@ -27,13 +27,13 @@ export default class Collider {
   }
 
   static point2rect(point, rect) {
-    const rotatedPoint = point.position.rotate(rect.position, -rect.angle);
+    const rotatedPoint = point.position.rotate(rect.position, -rect.rotation);
 
     return Collider.isPointInNonRotatedRect(rotatedPoint, rect);
   }
 
   static circle2rect(circle, rect) {
-    const rotatedCircleCenter = circle.position.rotate(rect.position, -rect.angle);
+    const rotatedCircleCenter = circle.position.rotate(rect.position, -rect.rotation);
 
     if(Collider.isPointInNonRotatedRect(rotatedCircleCenter, rect)) {
       return true;

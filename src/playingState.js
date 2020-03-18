@@ -1,9 +1,10 @@
 import GameState from './gameState.js';
 import TextLabel from './textLabel.js';
 import Vec2 from './vec2.js';
-import { Player } from './player.js';
+import Collider from './collider.js';
+import { Player, playerInvincibilityTime, playerRespawnTime } from './player.js';
 import { ScreenVec2, OriginX } from './screenVec2.js';
-import { Asteroid, asteroidStartCount, AsteroidSize, asteroidSplitCount } from './asteroid.js';
+import { Asteroid, asteroidStartCount, AsteroidSize, asteroidSplitCount, asteroidFirstSpawnDelay } from './asteroid.js';
 
 export default class PlayingState extends GameState {
   constructor(game) {
@@ -11,43 +12,80 @@ export default class PlayingState extends GameState {
     
     this.entities = [];
     this.player = undefined;
+    this.isPlayerRespawning = undefined;
+    this.isPlayerInvincible = undefined;
+    this.timeToRespawn = undefined;
+    this.invincibilityTimeLeft = undefined;
+    this.timeToFirstAsteroidSpawn = asteroidFirstSpawnDelay;
+  }
+
+  init() {
+    super.init();
+    
+    this.registerTagsCollisionRules();
   }
 
   handleInput(deltaTime) {
-    if (this.game.input.up.pressed) {
-      this.player.move(deltaTime);
-    }
-    if (this.game.input.left.pressed) {
-      this.player.rotateLeft(deltaTime);
-    }
-    if (this.game.input.right.pressed) {
-      this.player.rotateRight(deltaTime);
+    if (!this.isPlayerRespawning) {
+      if (this.game.input.up.pressed) {
+        this.player.move(deltaTime);
+      }
+      if (this.game.input.left.pressed) {
+        this.player.rotateLeft(deltaTime);
+      }
+      if (this.game.input.right.pressed) {
+        this.player.rotateRight(deltaTime);
+      }
     }
   }
 
   update(deltaTime) {
+    this.handleTimings(deltaTime);
     this.updateEntities(deltaTime);
     this.moveEntitiesThroughEdges();
     this.handleCollisions();
     this.removeDeadEntities();
   }
 
-  draw() {
-    this.game.ctx.clearRect(0, 0, this.game.width, this.game.height);
+  handleTimings(deltaTime) {
+    if (this.timeToRespawn > 0) {
+      this.timeToRespawn -= deltaTime;
 
-    for (const entity of this.entities) {
-      entity.draw(this.game.ctx);
+      if (this.timeToRespawn <= 0) {
+        this.isPlayerRespawning = false;
+
+        this.player.position = this.game.mapCenter;
+        this.player.velocity = Vec2.zero;
+        this.entities.push(this.player);
+      }
     }
 
-    this.game.guiRenderer.draw();
+    if (this.invincibilityTimeLeft > 0) {
+      this.invincibilityTimeLeft -= deltaTime;
+
+      if (this.invincibilityTimeLeft <= 0) {
+        this.isPlayerInvincible = false;
+
+        this.enablePlayerCollisions();
+      }
+    }
+
+    if (this.timeToFirstAsteroidSpawn > 0) {
+      this.timeToFirstAsteroidSpawn -= deltaTime;
+
+      if (this.timeToFirstAsteroidSpawn <= 0) {
+        this.spawnAsteroids(asteroidStartCount);
+      }
+    }
   }
 
   initEntities() {
-    // spawn player at the center
-    this.player = new Player(this.game.corners[2].multiply(0.5));
-    this.entities.push(this.player);
+    this.player = new Player(this.game.mapCenter, () => this.playerHit());
+    this.respawnPlayer(playerRespawnTime);
+  }
 
-    for (let i = 0; i < asteroidStartCount; ++i) {
+  spawnAsteroids(asteroidCount) {
+    for (let i = 0; i < asteroidCount; ++i) {
       const spawnPosition = this.game.getAsteroidSpawnPosition();
 
       this.entities.push(new Asteroid(spawnPosition, AsteroidSize.BIG, 
@@ -69,6 +107,46 @@ export default class PlayingState extends GameState {
                                       (asteroid) => this.splitAsteroid(asteroid),
                                       newVelocity));
     }
+  }
+
+  playerHit() {
+    if (this.player.alive) {
+      this.respawnPlayer(playerRespawnTime);
+      this.makePlayerInvincible(playerInvincibilityTime + playerRespawnTime);
+    }
+  }
+
+  respawnPlayer(respawnTime) {
+    this.isPlayerRespawning = true;
+    this.timeToRespawn = respawnTime;
+    this.removePlayer();
+  }
+
+  removePlayer() {
+    const entitiesCount = this.entities.length;
+    for (let i = 0; i < entitiesCount; ++i) {
+      if (this.entities[i] instanceof Player) {
+        this.entities.splice(i, 1);
+        break;
+      }
+    }
+  }
+
+  makePlayerInvincible(invincibilityTime) {
+    this.isPlayerInvincible = true;
+    this.invincibilityTimeLeft = invincibilityTime;
+
+    this.disablePlayerCollisions();
+  }
+
+  disablePlayerCollisions() {
+    Collider.registerTagsCollisionRule('player', 'asteroid', false);
+    Collider.registerTagsCollisionRule('enemy', 'player', false);
+  }
+
+  enablePlayerCollisions() {
+    Collider.registerTagsCollisionRule('player', 'asteroid', true);
+    Collider.registerTagsCollisionRule('enemy', 'player', true);
   }
 
   initInputHandling() {
@@ -95,5 +173,14 @@ export default class PlayingState extends GameState {
     this.game.guiRenderer.addElement('latestScore', latestScore);
     this.game.guiRenderer.addElement('highestScore', highestScore);
     this.game.guiRenderer.addElement('copyright', copyright);
+  }
+
+  registerTagsCollisionRules() {
+    Collider.registerTagsCollisionRule('player', 'player', false);
+    Collider.registerTagsCollisionRule('asteroid', 'asteroid', false);
+    Collider.registerTagsCollisionRule('enemy', 'enemy', false);
+    Collider.registerTagsCollisionRule('player', 'asteroid', true);
+    Collider.registerTagsCollisionRule('enemy', 'player', true);
+    Collider.registerTagsCollisionRule('enemy', 'asteroid', false);
   }
 }
