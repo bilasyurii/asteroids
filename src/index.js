@@ -1,5 +1,6 @@
 import MainMenuState from './mainMenuState.js';
 import GuiRenderer from './guiRenderer.js';
+import ScoresCollection from './scoresCollection.js';
 import Utils from './utils.js';
 import Vec2 from './vec2.js';
 import { Input } from './input.js';
@@ -21,6 +22,7 @@ export default class Game {
     window.addEventListener("resize", x => this.onResize());
     this.onResize();
 
+    this.scores = new ScoresCollection();
     this.guiRenderer = new GuiRenderer(this.ctx);
     this.input = new Input();
 

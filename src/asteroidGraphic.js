@@ -8,7 +8,7 @@ export default class AsteroidGraphic {
 
     const halfSize = size / 2;
     for (let i = 0; i < this.pointCount; ++i) {
-      this.points.push(Math.random() * halfSize + halfSize);
+      this.points.push(Utils.random(halfSize, halfSize * 2));
     }
 
     this.angleBetweenPoints = 2 * Math.PI / this.pointCount;

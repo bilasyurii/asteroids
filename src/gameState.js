@@ -2,6 +2,7 @@ export default class GameState {
   constructor(game) {
     this.game = game;
 
+    this.entities = [];
     this.subscriptions = [];
   }
 
@@ -47,7 +48,11 @@ export default class GameState {
     }
   }
 
+  update(deltaTime) {}
+  
   handleInput(deltaTime) {}
+
+  initEntities() {}
   
   onDestroy() {
     for (const subscription of this.subscriptions) {

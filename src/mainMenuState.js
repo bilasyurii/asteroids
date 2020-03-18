@@ -5,6 +5,7 @@ import Panel from './panel.js';
 import { ScreenCoord, ScreenCoordType } from './screenCoord.js';
 import { Asteroid, asteroidStartCount } from './asteroid.js';
 import PlayingState from './playingState.js';
+import Utils from './utils.js';
 
 export default class MainMenuState extends GameState {
   constructor(game) {
@@ -35,13 +36,13 @@ export default class MainMenuState extends GameState {
   initGUI() {
     super.initGUI();
     
-    const latestScore = new TextLabel('00', 30, 
+    const currentScore = new TextLabel('00', 30, 
         new ScreenVec2(0.2, 0.1, OriginX.RIGHT, OriginY.BOTTOM));
 
-    const highestScore = new TextLabel('00', 10,
+    const latestScore = new TextLabel('' + this.game.scores.latestScore, 10,
         new ScreenVec2(0.5, 0.1, OriginX.CENTER, OriginY.BOTTOM));
 
-    const randomZeros = new TextLabel('00', 30,
+    const highestScore = new TextLabel('' + this.game.scores.highestScore, 30,
         new ScreenVec2(0.8, 0.1, OriginX.LEFT, OriginY.BOTTOM));
 
     const copyright = new TextLabel('2020 YURA INC', 10,
@@ -53,22 +54,30 @@ export default class MainMenuState extends GameState {
     const highScoresPanel = new Panel(new ScreenVec2(0.5, 0.25, OriginX.CENTER, OriginY.TOP),
         new ScreenVec2(0.3, 0.5));
 
-    const highScoresText = new TextLabel('HIGH SCORES', 30,
-        new ScreenVec2(0.5, new ScreenCoord(0, ScreenCoordType.ABSOLUTE), OriginX.CENTER, OriginY.TOP));
+    const scoresCount = this.game.scores.scores.length;
 
-    highScoresPanel.addChild(highScoresText);
-    
-    for (let i = 0; i < 5; ++i) {
-      const randScore = Math.floor((Math.random() * 9000 + 1000)) * 10;
-      const concreteHighScore = new TextLabel((i + 1) + '. ' + randScore + ' SAM', 30,
-        new ScreenVec2(0.5, new ScreenCoord(60 * (i + 1), ScreenCoordType.ABSOLUTE), OriginX.CENTER, OriginY.TOP));
-      
-      highScoresPanel.addChild(concreteHighScore);
+    if (scoresCount !== 0) {
+      const highScoresText = new TextLabel('HIGH SCORES', 30,
+          new ScreenVec2(0.5, new ScreenCoord(0, ScreenCoordType.ABSOLUTE), OriginX.CENTER, OriginY.TOP));
+
+      highScoresPanel.addChild(highScoresText);
+
+      for (let i = 0; i < scoresCount; ++i) {
+        const record = this.game.scores.scores[i];
+
+        const position = new ScreenVec2(0.5, new ScreenCoord(60 * (i + 1), ScreenCoordType.ABSOLUTE),
+                                        OriginX.CENTER, OriginY.TOP);
+
+        const concreteHighScore = new TextLabel(
+            (i + 1) + '. ' + record.score + ' ' + record.initials, 30, position);
+        
+        highScoresPanel.addChild(concreteHighScore);
+      }
     }
         
+    this.game.guiRenderer.addElement('currentScore', currentScore);
     this.game.guiRenderer.addElement('latestScore', latestScore);
     this.game.guiRenderer.addElement('highestScore', highestScore);
-    this.game.guiRenderer.addElement('randomZeros', randomZeros);
     this.game.guiRenderer.addElement('copyright', copyright);
     this.game.guiRenderer.addElement('playText', playText);
     this.game.guiRenderer.addElement('highScoresPanel', highScoresPanel);

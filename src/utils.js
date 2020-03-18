@@ -11,6 +11,11 @@ export default class Utils {
     return Math.floor(Math.random() * max);
   }
 
+  static random(min, max) {
+    const range = max - min;
+    return Math.random() * range + min;
+  }
+
   static randomPointOnLine(lineStart, lineEnd) {
     const direction = lineEnd.substract(lineStart);
     const length = direction.length;
