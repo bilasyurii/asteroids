@@ -14,7 +14,7 @@ export const OriginY = {
 };
 
 export class ScreenVec2 {
-  constructor(x, y, originX, originY, type) {
+  constructor(x, y, originX, originY) {
     this.x = x;
     this.y = y;
     

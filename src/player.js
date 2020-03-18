@@ -12,6 +12,7 @@ export const playerDeceleration = 0.00005;
 export const playerReloadTime = 200;
 export const playerInvincibilityTime = 2000;
 export const playerRespawnTime = 2000;
+export const playerMaxLifeCount = 3;
 
 export class Player extends Entity {
   constructor(position, onHitCallback) {
@@ -19,7 +20,7 @@ export class Player extends Entity {
 
     super(position, collider, new PlayerGraphic(), playerMaxVelocity);
 
-    this.lifeCount = 3;
+    this.lifeCount = playerMaxLifeCount;
     this.timeToReloaded = 0;
     this.onHitCallback = onHitCallback;
   }

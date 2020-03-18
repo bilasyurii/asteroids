@@ -13,7 +13,6 @@ export const asteroidStartCount = 4;
 export const asteroidStartVelocity = 0.1;
 export const asteroidMaxVelocity = 0.1;
 export const asteroidSplitCount = 2;
-export const asteroidFirstSpawnDelay = 2000;
 
 export class Asteroid extends Entity {
   constructor(position, size, splitAsteroidCallback, velocity) {

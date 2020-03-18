@@ -36,13 +36,13 @@ export default class MainMenuState extends GameState {
     super.initGUI();
     
     const latestScore = new TextLabel('00', 30, 
-        new ScreenVec2(0.2, 0.1, OriginX.RIGHT));
+        new ScreenVec2(0.2, 0.1, OriginX.RIGHT, OriginY.BOTTOM));
 
     const highestScore = new TextLabel('00', 10,
-        new ScreenVec2(0.5, 0.1));
+        new ScreenVec2(0.5, 0.1, OriginX.CENTER, OriginY.BOTTOM));
 
-    const worldBest = new TextLabel('00', 30,
-        new ScreenVec2(0.8, 0.1, OriginX.LEFT));
+    const randomZeros = new TextLabel('00', 30,
+        new ScreenVec2(0.8, 0.1, OriginX.LEFT, OriginY.BOTTOM));
 
     const copyright = new TextLabel('2020 YURA INC', 10,
         new ScreenVec2(0.5, 0.9));
@@ -51,7 +51,7 @@ export default class MainMenuState extends GameState {
         new ScreenVec2(0.5, 0.8));
 
     const highScoresPanel = new Panel(new ScreenVec2(0.5, 0.25, OriginX.CENTER, OriginY.TOP),
-                                       new ScreenVec2(0.3, 0.5));
+        new ScreenVec2(0.3, 0.5));
 
     const highScoresText = new TextLabel('HIGH SCORES', 30,
         new ScreenVec2(0.5, new ScreenCoord(0, ScreenCoordType.ABSOLUTE), OriginX.CENTER, OriginY.TOP));
@@ -68,7 +68,7 @@ export default class MainMenuState extends GameState {
         
     this.game.guiRenderer.addElement('latestScore', latestScore);
     this.game.guiRenderer.addElement('highestScore', highestScore);
-    this.game.guiRenderer.addElement('worldBest', worldBest);
+    this.game.guiRenderer.addElement('randomZeros', randomZeros);
     this.game.guiRenderer.addElement('copyright', copyright);
     this.game.guiRenderer.addElement('playText', playText);
     this.game.guiRenderer.addElement('highScoresPanel', highScoresPanel);

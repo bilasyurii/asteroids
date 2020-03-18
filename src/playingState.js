@@ -1,10 +1,14 @@
 import GameState from './gameState.js';
 import TextLabel from './textLabel.js';
+import Panel from './panel.js';
 import Vec2 from './vec2.js';
 import Collider from './collider.js';
-import { Player, playerInvincibilityTime, playerRespawnTime } from './player.js';
-import { ScreenVec2, OriginX } from './screenVec2.js';
-import { Asteroid, asteroidStartCount, AsteroidSize, asteroidSplitCount, asteroidFirstSpawnDelay } from './asteroid.js';
+import GraphicGUIElement from './graphicGuiElement.js';
+import { Player, playerInvincibilityTime, playerRespawnTime, playerMaxLifeCount, playerSize } from './player.js';
+import { ScreenVec2, OriginX, OriginY } from './screenVec2.js';
+import { Asteroid, asteroidStartCount, AsteroidSize, asteroidSplitCount } from './asteroid.js';
+import { ScreenCoord, ScreenCoordType } from './screenCoord.js';
+import PlayerGraphic from './playerGraphic.js';
 
 export default class PlayingState extends GameState {
   constructor(game) {
@@ -16,7 +20,7 @@ export default class PlayingState extends GameState {
     this.isPlayerInvincible = undefined;
     this.timeToRespawn = undefined;
     this.invincibilityTimeLeft = undefined;
-    this.timeToFirstAsteroidSpawn = asteroidFirstSpawnDelay;
+    this.timeToGameStart = playerRespawnTime;
   }
 
   init() {
@@ -70,11 +74,13 @@ export default class PlayingState extends GameState {
       }
     }
 
-    if (this.timeToFirstAsteroidSpawn > 0) {
-      this.timeToFirstAsteroidSpawn -= deltaTime;
+    if (this.timeToGameStart > 0) {
+      this.timeToGameStart -= deltaTime;
 
-      if (this.timeToFirstAsteroidSpawn <= 0) {
+      if (this.timeToGameStart <= 0) {
         this.spawnAsteroids(asteroidStartCount);
+        
+        this.game.guiRenderer.removeElement('player1Text');
       }
     }
   }
@@ -114,6 +120,7 @@ export default class PlayingState extends GameState {
       this.respawnPlayer(playerRespawnTime);
       this.makePlayerInvincible(playerInvincibilityTime + playerRespawnTime);
     }
+    this.removeLifeFromUI();
   }
 
   respawnPlayer(respawnTime) {
@@ -139,6 +146,10 @@ export default class PlayingState extends GameState {
     this.disablePlayerCollisions();
   }
 
+  removeLifeFromUI() {
+    this.game.guiRenderer.getElement('lifesPanel').children.pop();
+  }
+
   disablePlayerCollisions() {
     Collider.registerTagsCollisionRule('player', 'asteroid', false);
     Collider.registerTagsCollisionRule('enemy', 'player', false);
@@ -161,18 +172,39 @@ export default class PlayingState extends GameState {
   initGUI() {
     super.initGUI();
     
-    const latestScore = new TextLabel('00', 30, 
-        new ScreenVec2(0.2, 0.1, OriginX.RIGHT));
+    const currentScore = new TextLabel('00', 30, 
+        new ScreenVec2(0.2, 0.1, OriginX.RIGHT, OriginY.BOTTOM));
 
     const highestScore = new TextLabel('00', 10,
-        new ScreenVec2(0.5, 0.1));
+        new ScreenVec2(0.5, 0.1, OriginX.CENTER, OriginY.BOTTOM));
 
     const copyright = new TextLabel('2020 YURA INC', 10,
         new ScreenVec2(0.5, 0.9));
-        
-    this.game.guiRenderer.addElement('latestScore', latestScore);
+
+    const player1Text = new TextLabel('PLAYER 1', 30,
+        new ScreenVec2(0.5, 0.2));
+
+    const lifesPanel = new Panel(new ScreenVec2(0.2, 0.11, OriginX.LEFT, OriginY.TOP),
+        new ScreenVec2(0, 0));
+
+    for (let i = 0; i < playerMaxLifeCount; ++i) {
+      const position = new ScreenVec2(new ScreenCoord(-1.5 * playerSize * i, ScreenCoordType.ABSOLUTE), 
+                                      new ScreenCoord(playerSize / 2, ScreenCoordType.ABSOLUTE),
+                                      OriginX.RIGHT, OriginY.TOP);
+
+      const size = new ScreenVec2(new ScreenCoord(playerSize, ScreenCoordType.ABSOLUTE), 
+                                  new ScreenCoord(playerSize, ScreenCoordType.ABSOLUTE));
+
+      const playerLifeGraphic = new GraphicGUIElement(position, new PlayerGraphic(), -Math.PI / 2, size);
+
+      lifesPanel.addChild(playerLifeGraphic);
+    }
+
+    this.game.guiRenderer.addElement('currentScore', currentScore);
     this.game.guiRenderer.addElement('highestScore', highestScore);
     this.game.guiRenderer.addElement('copyright', copyright);
+    this.game.guiRenderer.addElement('player1Text', player1Text);
+    this.game.guiRenderer.addElement('lifesPanel', lifesPanel);
   }
 
   registerTagsCollisionRules() {
