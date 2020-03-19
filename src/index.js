@@ -1,4 +1,5 @@
 import MainMenuState from './mainMenuState.js';
+import AudioPlayer from './audioPlayer.js';
 import GuiRenderer from './guiRenderer.js';
 import ScoresCollection from './scoresCollection.js';
 import Utils from './utils.js';
@@ -22,6 +23,7 @@ export default class Game {
     window.addEventListener("resize", x => this.onResize());
     this.onResize();
 
+    this.audioPlayer = new AudioPlayer();
     this.scores = new ScoresCollection();
     this.guiRenderer = new GuiRenderer(this.ctx);
     this.input = new Input();
@@ -61,6 +63,7 @@ export default class Game {
     const deltaTime = time - this.prevUpdateTime;
     this.prevUpdateTime = time;
     
+    this.audioPlayer.backgroundMusic.update(deltaTime);
     this.state.handleInput(deltaTime);
     this.state.update(deltaTime);
     this.state.draw();

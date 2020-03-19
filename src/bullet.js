@@ -6,10 +6,10 @@ export const defaultBulletSpeed = 0.2;
 export const bulletRange = 500;
 
 export class Bullet extends Entity {
-  constructor(position, ownerTag, velocity) {
+  constructor(audioPlayer, position, ownerTag, velocity) {
     const collider = new PointCollider(position, ownerTag);
     
-    super(position, collider, new BulletGraphic(), 0, Number.POSITIVE_INFINITY, velocity);
+    super(audioPlayer, position, collider, new BulletGraphic(), 0, Number.POSITIVE_INFINITY, velocity);
 
     this.distanceTravelled = 0;
   }

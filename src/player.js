@@ -2,6 +2,7 @@ import Entity from './entity.js';
 import Vec2 from './vec2.js';
 import RectCollider from './rectCollider.js';
 import PlayerGraphic from './playerGraphic.js';
+import RepeatableAudioClip from './repeatableAudioClip.js';
 import { Bullet } from './bullet.js';
 
 export const playerSize = 20;
@@ -14,15 +15,20 @@ export const playerInvincibilityTime = 2000;
 export const playerRespawnTime = 2000;
 export const playerMaxLifeCount = 3;
 
+const thrustEndDelay = 200;
+
 export class Player extends Entity {
-  constructor(position, onHitCallback) {
+  constructor(audioPlayer, position, onHitCallback) {
     const collider = new RectCollider(position, 'player', new Vec2(playerSize, playerSize));
 
-    super(position, collider, new PlayerGraphic(), 0, playerMaxVelocity);
+    super(audioPlayer, position, collider, new PlayerGraphic(), 0, playerMaxVelocity);
 
     this.lifeCount = playerMaxLifeCount;
     this.timeToReloaded = 0;
     this.onHitCallback = onHitCallback;
+    this.thrustClip = new RepeatableAudioClip('thrust', audioPlayer);
+    this.thrustClip.audioClip.playbackRate = 0.5;
+    this.timeToThrustEnd = 0;
   }
 
   draw(ctx) {
@@ -55,9 +61,20 @@ export class Player extends Entity {
     this.decelerate(playerDeceleration * deltaTime);
     
     super.update(deltaTime);
+
+    if (this.timeToThrustEnd > 0) {
+      this.timeToThrustEnd -= deltaTime;
+
+      if (this.timeToThrustEnd <= 0) {
+        this.thrustClip.stop();
+      }
+    }
   }
 
   move(deltaTime) {
+    this.timeToThrustEnd = thrustEndDelay;
+    this.thrustClip.play();
+
     this.addForce(Vec2.fromAngle(this.collider.rotation, playerEnginePower * deltaTime));
   }
 
@@ -77,9 +94,10 @@ export class Player extends Entity {
     if (this.timeToReloaded > 0) {
       return;
     }
+    this.audioPlayer.playClip('fire');
     this.timeToReloaded = playerReloadTime;
     const bulletVelocity = Vec2.fromAngle(this.collider.rotation, Bullet.defaultBulletSpeed);
-    return new Bullet(this.shootingPoint, this.collider.tag, bulletVelocity);
+    return new Bullet(this.audioPlayer, this.shootingPoint, this.collider.tag + '_bullets', bulletVelocity);
   }
 
   onCollision(other, scoreChangedCallback) {
@@ -88,6 +106,8 @@ export class Player extends Entity {
     if (this.lifeCount <= 0) {
       this.die();
     }
+
+    this.thrustClip.stop();
 
     scoreChangedCallback(other.killScore);
 

@@ -1,7 +1,8 @@
 import Vec2 from './vec2.js';
 
 export default class Entity {
-  constructor(position, collider, graphic, killScore, maxVelocity, velocity) {
+  constructor(audioPlayer, position, collider, graphic, killScore, maxVelocity, velocity) {
+    this.audioPlayer = audioPlayer;
     this.position = position;
     this.collider = collider;
     this.graphic = graphic;

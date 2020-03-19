@@ -23,7 +23,7 @@ export default class MainMenuState extends GameState {
     for (let i = 0; i < asteroidStartCount; ++i) {
       const spawnPosition = this.game.getAsteroidSpawnPosition();
 
-      this.entities.push(new Asteroid(spawnPosition));
+      this.entities.push(new Asteroid(this.game.audioPlayer, spawnPosition));
     }
   }
 

@@ -22,7 +22,7 @@ const asteroidKillScores = [
 ];
 
 export class Asteroid extends Entity {
-  constructor(position, size, splitAsteroidCallback, velocity) {
+  constructor(audioPlayer, position, size, splitAsteroidCallback, velocity) {
     if (size == undefined) {
       size = AsteroidSize.BIG;
     }
@@ -33,8 +33,8 @@ export class Asteroid extends Entity {
       
     const collider = new CircleCollider(position, 'asteroid', size);
 
-    super(position, collider, new AsteroidGraphic(size), Asteroid.getAsteroidKillScore(size), 
-          asteroidMaxVelocity, velocity);
+    super(audioPlayer, position, collider, new AsteroidGraphic(size), 
+          Asteroid.getAsteroidKillScore(size), asteroidMaxVelocity, velocity);
 
     this.size = size;
     this.splitAsteroidCallback = splitAsteroidCallback;
@@ -53,6 +53,16 @@ export class Asteroid extends Entity {
 
   onCollision(other, scoreChangedCallback) {
     this.die();
+
+    switch (this.size) {
+      case AsteroidSize.BIG:
+        this.audioPlayer.playClip('bangLarge');
+      case AsteroidSize.MEDIUM:
+        this.audioPlayer.playClip('bangMedium');
+      case AsteroidSize.SMALL:
+        this.audioPlayer.playClip('bangSmall');
+    }
+
     this.splitAsteroidCallback(this);
   }
 }

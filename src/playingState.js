@@ -89,6 +89,8 @@ export default class PlayingState extends GameState {
         this.waveAsteroidCount = asteroidStartCount;
         this.spawnAsteroids(asteroidStartCount);
         this.game.guiRenderer.removeElement('player1Text');
+        this.game.audioPlayer.backgroundMusic.setMinSpeed();
+        this.game.audioPlayer.backgroundMusic.play();
       }
     }
 
@@ -106,12 +108,14 @@ export default class PlayingState extends GameState {
       if (this.timeToAsteroidSpawn <= 0) {
         this.waveAsteroidCount = (this.waveAsteroidCount + asteroidsIncrementPerWave) % maxAsteroidsPerWave;
         this.spawnAsteroids(this.waveAsteroidCount);
+        this.game.audioPlayer.backgroundMusic.setMinSpeed();
+        this.game.audioPlayer.backgroundMusic.play();
       }
     }
   }
 
   initEntities() {
-    this.player = new Player(this.game.mapCenter, () => this.playerHit());
+    this.player = new Player(this.game.audioPlayer, this.game.mapCenter, () => this.playerHit());
     this.respawnPlayer(playerRespawnTime);
   }
 
@@ -121,7 +125,7 @@ export default class PlayingState extends GameState {
     for (let i = 0; i < asteroidCount; ++i) {
       const spawnPosition = this.game.getAsteroidSpawnPosition();
 
-      this.entities.push(new Asteroid(spawnPosition, AsteroidSize.BIG, 
+      this.entities.push(new Asteroid(this.game.audioPlayer, spawnPosition, AsteroidSize.BIG, 
                                       (asteroid) => this.splitAsteroid(asteroid)));
     }
   }
@@ -145,7 +149,7 @@ export default class PlayingState extends GameState {
       const newVelocityLength = asteroid.velocity.length * Utils.random(1.25, 1.5);
       const newVelocity = Vec2.random(newVelocityLength);
 
-      this.entities.push(new Asteroid(asteroid.position, newSize, 
+      this.entities.push(new Asteroid(this.game.audioPlayer, asteroid.position, newSize, 
                                       (asteroid) => this.splitAsteroid(asteroid),
                                       newVelocity));
     }
@@ -228,6 +232,12 @@ export default class PlayingState extends GameState {
   updateScoreUI() {
     this.game.guiRenderer.getElement('currentScore').text = '' + this.currentScore;
   }
+  
+  onDestroy() {
+    super.onDestroy();
+
+    this.game.audioPlayer.backgroundMusic.stop();
+  }
 
   initGUI() {
     super.initGUI();
@@ -275,8 +285,12 @@ export default class PlayingState extends GameState {
     Collider.registerTagsCollisionRule('player', 'player', false);
     Collider.registerTagsCollisionRule('asteroid', 'asteroid', false);
     Collider.registerTagsCollisionRule('enemy', 'enemy', false);
+    Collider.registerTagsCollisionRule('player_bullets', 'player_bullets', false);
     Collider.registerTagsCollisionRule('player', 'asteroid', true);
     Collider.registerTagsCollisionRule('enemy', 'player', true);
     Collider.registerTagsCollisionRule('enemy', 'asteroid', false);
+    Collider.registerTagsCollisionRule('player_bullets', 'player', true);
+    Collider.registerTagsCollisionRule('player_bullets', 'asteroid', true);
+    Collider.registerTagsCollisionRule('player_bullets', 'enemy', true);
   }
 }
