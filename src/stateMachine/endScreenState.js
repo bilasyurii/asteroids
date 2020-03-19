@@ -1,9 +1,9 @@
 import GameState from './gameState.js';
-import { ScreenVec2, OriginX, OriginY } from './screenVec2.js';
-import TextLabel from './textLabel.js';
-import Panel from './panel.js';
-import { ScreenCoord, ScreenCoordType } from './screenCoord.js';
 import MainMenuState from './mainMenuState.js';
+import TextLabel from '../guiElements/textLabel.js';
+import Panel from '../guiElements/panel.js';
+import { ScreenVec2, OriginX, OriginY } from '../utils/screenVec2.js';
+import { ScreenCoord, ScreenCoordType } from '../utils/screenCoord.js';
 
 const maxInitials = 3;
 

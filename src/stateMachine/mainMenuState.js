@@ -1,11 +1,10 @@
 import GameState from './gameState.js';
-import { ScreenVec2, OriginX, OriginY } from './screenVec2.js';
-import TextLabel from './textLabel.js';
-import Panel from './panel.js';
-import { ScreenCoord, ScreenCoordType } from './screenCoord.js';
-import { Asteroid, asteroidStartCount } from './asteroid.js';
 import PlayingState from './playingState.js';
-import Utils from './utils.js';
+import Panel from '../guiElements/panel.js';
+import TextLabel from '../guiElements/textLabel.js';
+import { ScreenCoord, ScreenCoordType } from '../utils/screenCoord.js';
+import { ScreenVec2, OriginX, OriginY } from '../utils/screenVec2.js';
+import { Asteroid, asteroidStartCount } from '../entities/asteroid.js';
 
 export default class MainMenuState extends GameState {
   constructor(game) {

@@ -1,4 +1,4 @@
-import Vec2 from './vec2.js';
+import Vec2 from '../utils/vec2.js';
 
 export default class Entity {
   constructor(audioPlayer, position, collider, graphic, killScore, maxVelocity, velocity) {

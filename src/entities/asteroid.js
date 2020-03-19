@@ -1,7 +1,7 @@
 import Entity from './entity.js';
-import Vec2 from './vec2.js';
-import CircleCollider from './circleCollider.js';
-import AsteroidGraphic from './asteroidGraphic.js';
+import Vec2 from '../utils/vec2.js';
+import CircleCollider from '../colliders/circleCollider.js';
+import AsteroidGraphic from '../graphics/asteroidGraphic.js';
 
 export const AsteroidSize = {
   BIG: 50,

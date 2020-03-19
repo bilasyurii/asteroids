@@ -1,8 +1,8 @@
 import Entity from './entity.js';
-import Vec2 from './vec2.js';
-import RectCollider from './rectCollider.js';
-import PlayerGraphic from './playerGraphic.js';
-import RepeatableAudioClip from './repeatableAudioClip.js';
+import Vec2 from '../utils/vec2.js';
+import RectCollider from '../colliders/rectCollider.js';
+import PlayerGraphic from '../graphics/playerGraphic.js';
+import RepeatableAudioClip from '../audio/repeatableAudioClip.js';
 import { Bullet } from './bullet.js';
 
 export const playerSize = 20;

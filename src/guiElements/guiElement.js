@@ -1,4 +1,4 @@
-import { OriginX, OriginY } from './screenVec2.js';
+import { OriginX, OriginY } from '../utils/screenVec2.js';
 
 export default class GUIElement {
   constructor(screenPosition, screenSize) {

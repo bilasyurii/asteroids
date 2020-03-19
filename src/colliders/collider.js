@@ -1,5 +1,5 @@
-import Utils from './utils.js';
-import Vec2 from './vec2.js';
+import Utils from '../utils/utils.js';
+import Vec2 from '../utils/vec2.js';
 
 export default class Collider {
   constructor(position, tag) {

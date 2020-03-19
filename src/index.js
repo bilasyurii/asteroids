@@ -1,11 +1,11 @@
-import MainMenuState from './mainMenuState.js';
-import AudioPlayer from './audioPlayer.js';
-import GuiRenderer from './guiRenderer.js';
-import ScoresCollection from './scoresCollection.js';
-import Utils from './utils.js';
-import Vec2 from './vec2.js';
-import ParticlePool from './particlePool.js';
-import { Input } from './input.js';
+import MainMenuState from './stateMachine/mainMenuState.js';
+import AudioPlayer from './audio/audioPlayer.js';
+import GuiRenderer from './guiElements/guiRenderer.js';
+import ScoresCollection from './scores/scoresCollection.js';
+import Utils from './utils/utils.js';
+import Vec2 from './utils/vec2.js';
+import ParticlePool from './particles/particlePool.js';
+import { Input } from './input/input.js';
 
 export default class Game {
   constructor() {

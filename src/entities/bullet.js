@@ -1,6 +1,6 @@
 import Entity from "./entity.js";
-import PointCollider from "./pointCollider.js";
-import BulletGraphic from "./bulletGraphic.js";
+import PointCollider from "../colliders/pointCollider.js";
+import BulletGraphic from "../graphics/bulletGraphic.js";
 
 export const defaultBulletSpeed = 0.2;
 export const bulletRange = 500;

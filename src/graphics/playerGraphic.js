@@ -1,5 +1,5 @@
-import Vec2 from "./vec2.js";
-import { playerSize } from "./player.js";
+import Vec2 from "../utils/vec2.js";
+import { playerSize } from "../entities/player.js";
 import LineGraphic from "./lineGraphic.js";
 
 export default class PlayerGraphic {
