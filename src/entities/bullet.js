@@ -31,7 +31,7 @@ export class Bullet extends Entity {
   onCollision(other, scoreChangedCallback) {
     this.die();
 
-    if (this.collider.tag === 'player') {
+    if (this.collider.tag === 'player_bullets') {
       scoreChangedCallback(other.killScore);
     }
   }
