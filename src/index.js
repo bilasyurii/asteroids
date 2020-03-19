@@ -4,6 +4,7 @@ import GuiRenderer from './guiRenderer.js';
 import ScoresCollection from './scoresCollection.js';
 import Utils from './utils.js';
 import Vec2 from './vec2.js';
+import ParticlePool from './particlePool.js';
 import { Input } from './input.js';
 
 export default class Game {
@@ -22,7 +23,8 @@ export default class Game {
   init() {
     window.addEventListener("resize", x => this.onResize());
     this.onResize();
-
+    
+    this.particlePool = new ParticlePool();
     this.audioPlayer = new AudioPlayer();
     this.scores = new ScoresCollection();
     this.guiRenderer = new GuiRenderer(this.ctx);
@@ -62,11 +64,13 @@ export default class Game {
   update(time) {
     const deltaTime = time - this.prevUpdateTime;
     this.prevUpdateTime = time;
-    
+
+    this.particlePool.update(deltaTime);
     this.audioPlayer.backgroundMusic.update(deltaTime);
     this.state.handleInput(deltaTime);
     this.state.update(deltaTime);
     this.state.draw();
+    this.particlePool.draw(this.ctx);
     this.guiRenderer.draw();
 
     requestAnimationFrame((time) => this.update(time));

@@ -1,6 +1,12 @@
+import Vec2 from "./vec2.js";
+
 export default class DotGraphic {
   constructor(dots) {
-    this.dots = dots;
+    if (dots == undefined) {
+      this.dots = [Vec2.zero];
+    } else {
+      this.dots = dots;
+    }
   }
 
   draw(ctx) {

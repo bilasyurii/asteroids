@@ -11,6 +11,9 @@ import { Asteroid, asteroidStartCount, AsteroidSize, asteroidSplitCount, asteroi
 import { ScreenCoord, ScreenCoordType } from './screenCoord.js';
 import PlayerGraphic from './playerGraphic.js';
 import EndScreenState from './endScreenState.js';
+import { ExplosionType } from './particle.js';
+import DotGraphic from './dotGraphic.js';
+import LineGraphic from './lineGraphic.js';
 
 const endScreenDelay = 2000;
 const maxAsteroidsPerWave = 11;
@@ -131,6 +134,8 @@ export default class PlayingState extends GameState {
   }
 
   splitAsteroid(asteroid) {
+    this.handleExplosion(ExplosionType.DOTS, asteroid, asteroid.size);
+
     if (asteroid.size === AsteroidSize.SMALL) {
       --this.asteroidCount;
 
@@ -156,6 +161,8 @@ export default class PlayingState extends GameState {
   }
 
   playerHit() {
+    this.handleExplosion(ExplosionType.LINES, this.player, playerSize / 2);
+
     if (this.player.alive) {
       this.respawnPlayer(playerRespawnTime);
       this.makePlayerInvincible(playerInvincibilityTime + playerRespawnTime);
@@ -237,6 +244,40 @@ export default class PlayingState extends GameState {
     super.onDestroy();
 
     this.game.audioPlayer.backgroundMusic.stop();
+  }
+
+  handleExplosion(explosionType, owner, size) {
+    const particleCount = size;
+    
+    for (let i = 0; i < particleCount; ++i) {
+      const velocityLength = Utils.random(0.05, 0.2);
+      const velocity = Vec2.fromAngle(Utils.random(0, 2 * Math.PI), velocityLength);
+      const particle = this.game.particlePool.newParticle;
+      let lifeSpan;
+      if (owner instanceof Player) {
+        lifeSpan = Utils.random(400, 700);
+      } else {
+        lifeSpan = Utils.random(200, 400);
+      }
+      const rotation = Utils.random(0, 2 * Math.PI);
+      const rotationSpeed = Utils.random(0.01, 0.02);
+      
+      let graphic;
+
+      switch (explosionType) {
+        case ExplosionType.DOTS:
+          graphic = new DotGraphic();
+          break;
+        case ExplosionType.LINES:
+          graphic = new LineGraphic([{
+            from: new Vec2(-5, 0),
+            to: new Vec2(5, 0)
+          }]);
+          break;
+      }
+    
+      particle.init(owner.position, graphic, velocity, lifeSpan, rotation, rotationSpeed, 0.00005);
+    }
   }
 
   initGUI() {

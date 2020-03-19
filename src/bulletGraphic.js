@@ -3,7 +3,7 @@ import Vec2 from './vec2.js';
 
 export default class BulletGraphic {
   constructor() {
-    this.dotGraphic = new DotGraphic([Vec2.zero]);
+    this.dotGraphic = new DotGraphic();
   }
 
   draw(ctx) {
