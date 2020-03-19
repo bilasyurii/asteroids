@@ -7,12 +7,14 @@ import Utils from './utils.js';
 import GraphicGUIElement from './graphicGuiElement.js';
 import { Player, playerInvincibilityTime, playerRespawnTime, playerMaxLifeCount, playerSize } from './player.js';
 import { ScreenVec2, OriginX, OriginY } from './screenVec2.js';
-import { Asteroid, asteroidStartCount, AsteroidSize, asteroidSplitCount } from './asteroid.js';
+import { Asteroid, asteroidStartCount, AsteroidSize, asteroidSplitCount, asteroidSpawnDelay } from './asteroid.js';
 import { ScreenCoord, ScreenCoordType } from './screenCoord.js';
 import PlayerGraphic from './playerGraphic.js';
 import EndScreenState from './endScreenState.js';
 
 const endScreenDelay = 2000;
+const maxAsteroidsPerWave = 11;
+const asteroidsIncrementPerWave = 2;
 
 export default class PlayingState extends GameState {
   constructor(game) {
@@ -26,6 +28,9 @@ export default class PlayingState extends GameState {
     this.timeToGameStart = playerRespawnTime;
     this.timeToEndScreen = 0;
     this.currentScore = 0;
+    this.asteroidCount = undefined;
+    this.waveAsteroidCount = undefined;
+    this.timeToAsteroidSpawn = undefined;
   }
 
   init() {
@@ -62,7 +67,6 @@ export default class PlayingState extends GameState {
 
       if (this.timeToRespawn <= 0) {
         this.isPlayerRespawning = false;
-
         this.player.position = this.game.mapCenter;
         this.player.velocity = Vec2.zero;
         this.entities.push(this.player);
@@ -74,7 +78,6 @@ export default class PlayingState extends GameState {
 
       if (this.invincibilityTimeLeft <= 0) {
         this.isPlayerInvincible = false;
-
         this.enablePlayerCollisions();
       }
     }
@@ -83,8 +86,8 @@ export default class PlayingState extends GameState {
       this.timeToGameStart -= deltaTime;
 
       if (this.timeToGameStart <= 0) {
+        this.waveAsteroidCount = asteroidStartCount;
         this.spawnAsteroids(asteroidStartCount);
-        
         this.game.guiRenderer.removeElement('player1Text');
       }
     }
@@ -96,6 +99,15 @@ export default class PlayingState extends GameState {
         this.game.setState(new EndScreenState(this.game, this.currentScore));
       }
     }
+
+    if (this.timeToAsteroidSpawn > 0) {
+      this.timeToAsteroidSpawn -= deltaTime;
+
+      if (this.timeToAsteroidSpawn <= 0) {
+        this.waveAsteroidCount = (this.waveAsteroidCount + asteroidsIncrementPerWave) % maxAsteroidsPerWave;
+        this.spawnAsteroids(this.waveAsteroidCount);
+      }
+    }
   }
 
   initEntities() {
@@ -104,6 +116,8 @@ export default class PlayingState extends GameState {
   }
 
   spawnAsteroids(asteroidCount) {
+    this.asteroidCount = asteroidCount;
+
     for (let i = 0; i < asteroidCount; ++i) {
       const spawnPosition = this.game.getAsteroidSpawnPosition();
 
@@ -113,9 +127,17 @@ export default class PlayingState extends GameState {
   }
 
   splitAsteroid(asteroid) {
-    if(asteroid.size === AsteroidSize.SMALL) {
+    if (asteroid.size === AsteroidSize.SMALL) {
+      --this.asteroidCount;
+
+      if (this.asteroidCount === 0) {
+        this.timeToAsteroidSpawn = asteroidSpawnDelay;
+      }
+
       return;
     }
+
+    ++this.asteroidCount;
 
     const newSize = (asteroid.size === AsteroidSize.BIG ? AsteroidSize.MEDIUM : AsteroidSize.SMALL);
 

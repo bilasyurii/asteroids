@@ -1,4 +1,4 @@
-const topScoresCount = 3;
+const topScoresCount = 5;
 
 export default class ScoresCollection {
   constructor() {
@@ -9,14 +9,18 @@ export default class ScoresCollection {
   isHighscore(score) {
     const scoresCount = this.scores.length;
 
-    return scoresCount < topScoresCount || score > this.scores[scoresCount - 1];
+    return scoresCount < topScoresCount || score > this.scores[scoresCount - 1].score;
+  }
+
+  registerLatestScore(latestScore) {
+    this.latestScore = latestScore;
   }
 
   registerScore(score, initials) {
-    this.latestScore = score;
+    this.registerLatestScore(score);
 
     const scoresCount = this.scores.length;
-    if (scoresCount < topScoresCount || score > this.scores[scoresCount - 1]) {
+    if (scoresCount < topScoresCount || score > this.scores[scoresCount - 1].score) {
       if (scoresCount === topScoresCount) {
         this.scores.pop();
       }

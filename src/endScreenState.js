@@ -10,7 +10,7 @@ const maxInitials = 3;
 export default class EndScreenState extends GameState {
   constructor(game, score) {
     super(game);
-    this.score = score;
+    this.currentScore = score;
     this.isHighscore = undefined;
     this.initials = undefined;
     this.currentInitial = 0;
@@ -83,7 +83,7 @@ export default class EndScreenState extends GameState {
     if (this.currentInitial < maxInitials) {
       this.initInitial();
     } else {
-      this.game.scores.registerScore(this.score, this.initials.join(''));
+      this.game.scores.registerScore(this.currentScore, this.initials.join(''));
       this.goToMainMenu();
     }
   }
@@ -102,7 +102,7 @@ export default class EndScreenState extends GameState {
   initGUI() {
     super.initGUI();
     
-    const currentScore = new TextLabel('00', 30, 
+    const currentScore = new TextLabel('' + this.currentScore, 30, 
         new ScreenVec2(0.2, 0.1, OriginX.RIGHT, OriginY.BOTTOM));
 
     const latestScore = new TextLabel('' + this.game.scores.latestScore, 10,
@@ -160,6 +160,8 @@ export default class EndScreenState extends GameState {
 
       this.game.guiRenderer.addElement('initialsPanel', initialsPanel);
     } else {
+      this.game.scores.registerLatestScore(this.currentScore);
+
       const betterLuck = new TextLabel('BETTER LUCK NEXT TIME', 30,
           new ScreenVec2(0.5, 0.25, OriginX.CENTER, OriginY.TOP));
           

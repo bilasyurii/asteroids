@@ -13,6 +13,7 @@ export const asteroidStartCount = 4;
 export const asteroidStartVelocity = 0.1;
 export const asteroidMaxVelocity = 0.1;
 export const asteroidSplitCount = 2;
+export const asteroidSpawnDelay = 1000;
 
 const asteroidKillScores = [
   20,
