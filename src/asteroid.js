@@ -14,6 +14,12 @@ export const asteroidStartVelocity = 0.1;
 export const asteroidMaxVelocity = 0.1;
 export const asteroidSplitCount = 2;
 
+const asteroidKillScores = [
+  20,
+  50,
+  100
+];
+
 export class Asteroid extends Entity {
   constructor(position, size, splitAsteroidCallback, velocity) {
     if (size == undefined) {
@@ -26,13 +32,25 @@ export class Asteroid extends Entity {
       
     const collider = new CircleCollider(position, 'asteroid', size);
 
-    super(position, collider, new AsteroidGraphic(size), asteroidMaxVelocity, velocity);
+    super(position, collider, new AsteroidGraphic(size), Asteroid.getAsteroidKillScore(size), 
+          asteroidMaxVelocity, velocity);
 
     this.size = size;
     this.splitAsteroidCallback = splitAsteroidCallback;
   }
 
-  onCollision() {
+  static getAsteroidKillScore(size) {
+    switch (size) {
+      case AsteroidSize.BIG:
+        return asteroidKillScores[0];
+      case AsteroidSize.MEDIUM:
+        return asteroidKillScores[1];
+      case AsteroidSize.SMALL:
+        return asteroidKillScores[2];
+    }
+  }
+
+  onCollision(other, scoreChangedCallback) {
     this.die();
     this.splitAsteroidCallback(this);
   }

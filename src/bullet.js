@@ -9,7 +9,7 @@ export class Bullet extends Entity {
   constructor(position, ownerTag, velocity) {
     const collider = new PointCollider(position, ownerTag);
     
-    super(position, collider, new BulletGraphic(), Number.POSITIVE_INFINITY, velocity);
+    super(position, collider, new BulletGraphic(), 0, Number.POSITIVE_INFINITY, velocity);
 
     this.distanceTravelled = 0;
   }
@@ -28,7 +28,11 @@ export class Bullet extends Entity {
     }
   }
 
-  onCollision() {
+  onCollision(other, scoreChangedCallback) {
     this.die();
+
+    if (this.collider.tag === 'player') {
+      scoreChangedCallback(other.killScore);
+    }
   }
 }

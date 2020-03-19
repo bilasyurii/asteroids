@@ -32,14 +32,16 @@ export default class GameState {
         for (const other of this.entities) {
           if (other != entity && other.alive) {
             if (entity.collides(other)) {
-              entity.onCollision();
-              other.onCollision();
+              entity.onCollision(other, (scoreChange) => this.handleScoreChange(scoreChange));
+              other.onCollision(entity, (scoreChange) => this.handleScoreChange(scoreChange));
             }
           }
         }
       }
     }
   }
+
+  handleScoreChange(scoreChange) {}
 
   moveEntitiesThroughEdges() {
     for (const entity of this.entities) {

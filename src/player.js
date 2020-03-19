@@ -12,13 +12,13 @@ export const playerDeceleration = 0.00005;
 export const playerReloadTime = 200;
 export const playerInvincibilityTime = 2000;
 export const playerRespawnTime = 2000;
-export const playerMaxLifeCount = 3;
+export const playerMaxLifeCount = 1;
 
 export class Player extends Entity {
   constructor(position, onHitCallback) {
     const collider = new RectCollider(position, 'player', new Vec2(playerSize, playerSize));
 
-    super(position, collider, new PlayerGraphic(), playerMaxVelocity);
+    super(position, collider, new PlayerGraphic(), 0, playerMaxVelocity);
 
     this.lifeCount = playerMaxLifeCount;
     this.timeToReloaded = 0;
@@ -82,12 +82,14 @@ export class Player extends Entity {
     return new Bullet(this.shootingPoint, this.collider.tag, bulletVelocity);
   }
 
-  onCollision() {
+  onCollision(other, scoreChangedCallback) {
     --this.lifeCount;
 
     if (this.lifeCount <= 0) {
       this.die();
     }
+
+    scoreChangedCallback(other.killScore);
 
     this.onHitCallback();
   }

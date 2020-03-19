@@ -1,4 +1,4 @@
-const topScoresCount = 5;
+const topScoresCount = 3;
 
 export default class ScoresCollection {
   constructor() {

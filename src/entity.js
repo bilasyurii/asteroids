@@ -1,10 +1,11 @@
 import Vec2 from './vec2.js';
 
 export default class Entity {
-  constructor(position, collider, graphic, maxVelocity, velocity) {
+  constructor(position, collider, graphic, killScore, maxVelocity, velocity) {
     this.position = position;
     this.collider = collider;
     this.graphic = graphic;
+    this.killScore = killScore;
     this.maxVelocity = maxVelocity;
 
     if (velocity == undefined) {
@@ -14,6 +15,12 @@ export default class Entity {
     }
     
     this.alive = true;
+
+    this.init();
+  }
+
+  init() {
+    this.collider.parent = this;
   }
 
   addForce(forceVelocity) {
@@ -56,5 +63,5 @@ export default class Entity {
     this.alive = false;
   }
 
-  onCollision() {}
+  onCollision(other, scoreChangedCallback) {}
 }

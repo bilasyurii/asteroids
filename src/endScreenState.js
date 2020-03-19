@@ -19,12 +19,14 @@ export default class EndScreenState extends GameState {
   init() {
     super.init();
 
-    this.initials = [];
-    for (let i = 0; i < maxInitials; ++i) {
-      this.initials.push(undefined);
-    }
+    if (this.isHighscore) {
+      this.initials = [];
+      for (let i = 0; i < maxInitials; ++i) {
+        this.initials.push(undefined);
+      }
 
-    this.initInitial();
+      this.initInitial();
+    }
   }
 
   initInitial() {
@@ -34,17 +36,23 @@ export default class EndScreenState extends GameState {
   }
 
   initInputHandling() {
-    this.subscriptions.push(this.game.input.up.subscribe(true, () => {
-      this.letterUp();
-    }));
+    if (this.isHighscore) {
+      this.subscriptions.push(this.game.input.up.subscribe(true, () => {
+        this.letterUp();
+      }));
 
-    this.subscriptions.push(this.game.input.down.subscribe(true, () => {
-      this.letterDown();
-    }));
+      this.subscriptions.push(this.game.input.down.subscribe(true, () => {
+        this.letterDown();
+      }));
 
-    this.subscriptions.push(this.game.input.action.subscribe(true, () => {
-      this.confirm();
-    }));
+      this.subscriptions.push(this.game.input.action.subscribe(true, () => {
+        this.confirm();
+      }));
+    } else {
+      this.subscriptions.push(this.game.input.action.subscribe(true, () => {
+        this.goToMainMenu();
+      }));
+    }
   }
 
   letterUp() {
@@ -76,8 +84,12 @@ export default class EndScreenState extends GameState {
       this.initInitial();
     } else {
       this.game.scores.registerScore(this.score, this.initials.join(''));
-      this.game.setState(new MainMenuState(this.game));
+      this.goToMainMenu();
     }
+  }
+
+  goToMainMenu() {
+    this.game.setState(new MainMenuState(this.game));
   }
 
   updateInitialUI() {
@@ -101,24 +113,11 @@ export default class EndScreenState extends GameState {
 
     const copyright = new TextLabel('2020 YURA INC', 10,
         new ScreenVec2(0.5, 0.9));
-
-    const initialsPanel = new Panel(new ScreenVec2(0.5, 0.8, OriginX.CENTER, OriginY.BOTTOM),
-        new ScreenVec2(new ScreenCoord(200, ScreenCoordType.ABSOLUTE), 0.3));
-
-    const initialsDistance = 1 / (maxInitials - 1);
-        
-    for (let i = 0; i < maxInitials; ++i) {
-      const concreteInitialElement = new TextLabel('_', 30, 
-          new ScreenVec2(initialsDistance * i, 1, OriginX.CENTER, OriginY.BOTTOM));
-        
-      initialsPanel.addChild(concreteInitialElement);
-    }
         
     this.game.guiRenderer.addElement('currentScore', currentScore);
     this.game.guiRenderer.addElement('latestScore', latestScore);
     this.game.guiRenderer.addElement('highestScore', highestScore);
     this.game.guiRenderer.addElement('copyright', copyright);
-    this.game.guiRenderer.addElement('initialsPanel', initialsPanel);
 
     this.isHighscore = this.game.scores.isHighscore(this.currentScore);
 
@@ -144,11 +143,32 @@ export default class EndScreenState extends GameState {
       infoPanel.addChild(letterCorrect);
 
       this.game.guiRenderer.addElement('infoPanel', infoPanel);
+
+      
+
+      const initialsPanel = new Panel(new ScreenVec2(0.5, 0.8, OriginX.CENTER, OriginY.BOTTOM),
+      new ScreenVec2(new ScreenCoord(200, ScreenCoordType.ABSOLUTE), 0.3));
+
+      const initialsDistance = 1 / (maxInitials - 1);
+          
+      for (let i = 0; i < maxInitials; ++i) {
+        const concreteInitialElement = new TextLabel('_', 30, 
+            new ScreenVec2(initialsDistance * i, 1, OriginX.CENTER, OriginY.BOTTOM));
+          
+        initialsPanel.addChild(concreteInitialElement);
+      }
+
+      this.game.guiRenderer.addElement('initialsPanel', initialsPanel);
     } else {
       const betterLuck = new TextLabel('BETTER LUCK NEXT TIME', 30,
           new ScreenVec2(0.5, 0.25, OriginX.CENTER, OriginY.TOP));
           
       this.game.guiRenderer.addElement('betterLuck', betterLuck);
+
+      const howToContinue = new TextLabel('PRESS SPACE/RETURN TO CONTINUE', 20,
+          new ScreenVec2(0.5, 0.7, OriginX.CENTER, OriginY.TOP));
+          
+      this.game.guiRenderer.addElement('howToContinue', howToContinue);
     }
   }
 }

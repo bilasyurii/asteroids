@@ -35,7 +35,7 @@ export default class PlayingState extends GameState {
   }
 
   handleInput(deltaTime) {
-    if (!this.isPlayerRespawning) {
+    if (!this.isPlayerRespawning && this.player.alive) {
       if (this.game.input.up.pressed) {
         this.player.move(deltaTime);
       }
@@ -186,11 +186,25 @@ export default class PlayingState extends GameState {
 
   initInputHandling() {
     this.subscriptions.push(this.game.input.action.subscribe(true, () => {
-      const bullet = this.player.shoot();
-      if (bullet != undefined) {
-        this.entities.push(bullet);
+      if (!this.isPlayerRespawning && this.player.alive) {
+        const bullet = this.player.shoot();
+
+        if (bullet != undefined) {
+          this.entities.push(bullet);
+        }
       }
     }));
+  }
+
+  handleScoreChange(scoreChange) {
+    if (scoreChange !== 0) {
+      this.currentScore += scoreChange;
+      this.updateScoreUI();
+    }
+  }
+
+  updateScoreUI() {
+    this.game.guiRenderer.getElement('currentScore').text = '' + this.currentScore;
   }
 
   initGUI() {
